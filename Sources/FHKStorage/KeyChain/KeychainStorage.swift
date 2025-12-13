@@ -112,3 +112,21 @@ private extension KeychainStorage {
         ]
     }
 }
+
+/*
+ 
+ EJEMPLO DE USO
+ 
+ public func saveLanguage(_ language: String) async {
+     let languageType = Configuration.languageTypeFromCode(language)
+     await AppSecurity.shared.setLanguage(languageType)
+ }
+ 
+ public func readLanguage() async {
+     guard let currentLanguage = await AppSecurity.shared.language else {
+         return
+     }
+     
+ }
+ 
+ */

@@ -67,13 +67,21 @@ public actor UserDefaultStorage: UserDefaultsProtocol {
          self.storage = storage
      }
      
-     func saveSessionID(id: UUID) async {
+     func saveSessionID(id: String) async {
          do {
              try await storage.save(id, forKey: UserDefaultsKeys.userID)
          } catch {
              print("Error saving: \(error)")
          }
      }
+ 
+ func readSessionID() async -> String {
+     do {
+ let languageCode = try await storage.read(String.self, forKey: UserDefaultsKeys.userID)
+     } catch {
+         print("Error saving: \(error)")
+     }
+ }
      
      // ... otros métodos ...
  }
