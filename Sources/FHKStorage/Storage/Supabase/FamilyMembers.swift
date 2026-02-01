@@ -20,9 +20,20 @@ public class SupabaseFamilyMembers: StorageProtocol {
     public func addMember(name: String, email: String) async throws {
         let newMember = FamilyMember(email: email, memberName: name)
         
-        try await supabaseClient.from(FAMILY_MEMBER_TABLE)
-            .insert(newMember)
-            .execute()
+        do {
+            let response = try await supabaseClient.from(FAMILY_MEMBER_TABLE)
+                .insert(newMember)
+                .execute()
+            
+            print("✅ Status Code: \(response.status)")
+            // Si llegas aquí, el servidor recibió algo.
+        } catch {
+            // Aquí verás errores de red o de decodificación
+            print("❌ Error de Supabase: \(error.localizedDescription)")
+            if let decodingError = error as? DecodingError {
+                print("Error de decodificación: \(decodingError)")
+            }
+        }
     }
     
     public func fetchFamilyMembers() async throws -> [FamilyMember] {
