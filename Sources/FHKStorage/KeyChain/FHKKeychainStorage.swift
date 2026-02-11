@@ -8,7 +8,7 @@
 import Security
 import Foundation
 
-final class KeychainStorage: FHKKeychainProtocol {
+final public class FHKKeychainStorage: FHKKeychainProtocol {
     private let service = Bundle.main.bundleIdentifier ?? "com.fleon.fintechids"
     private let lock = NSLock()
     
@@ -72,7 +72,7 @@ final class KeychainStorage: FHKKeychainProtocol {
 }
 
 // MARK: - Extension methods
-private extension KeychainStorage {
+private extension FHKKeychainStorage {
     func save(data: Data, for key: String) throws {
         var query = baseQuery(for: key)
         query[kSecValueData as String] = data
