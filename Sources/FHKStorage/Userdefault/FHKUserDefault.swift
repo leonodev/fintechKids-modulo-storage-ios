@@ -6,7 +6,7 @@ import Foundation
 public actor FHKUserDefault: FHKUserDefaultsProtocol {
     private let client: UserDefaults
     
-    init(client: UserDefaults = .standard) {
+    public init(client: UserDefaults = .standard) {
         self.client = client
     }
 
