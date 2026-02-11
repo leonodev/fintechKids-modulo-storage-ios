@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol StorageManagerProtocol {
+public protocol FHKStorageManagerProtocol {
     var userDefault: FHKUserDefaultsProtocol { get }
     var keychain: FHKKeychainProtocol { get }
     
@@ -20,7 +20,7 @@ public protocol StorageManagerProtocol {
 }
 
 // UserDefault Methods
-public class StorageManager: StorageManagerProtocol  {
+public class FHKStorageManager: FHKStorageManagerProtocol  {
     public var userDefault: FHKUserDefaultsProtocol
     public var keychain: FHKKeychainProtocol
     
@@ -54,7 +54,7 @@ public class StorageManager: StorageManagerProtocol  {
 }
 
 // Keychain Methods
-extension StorageManager {
+extension FHKStorageManager {
     
     func saveKeychain<T: Codable & Sendable>(_ value: T, for key: String) throws {
         try keychain.save(value, for: key)
