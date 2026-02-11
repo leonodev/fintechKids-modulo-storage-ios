@@ -3,28 +3,28 @@
 
 import Foundation
 
-public actor UserDefaultStorage: UserDefaultsProtocol {
+actor FHKUserDefault: FHKUserDefaultsProtocol {
     private let client: UserDefaults
     
-    public init(client: UserDefaults = .standard) {
+    init(client: UserDefaults = .standard) {
         self.client = client
     }
 
-    public func save<T: Encodable & Sendable>(_ value: T, forKey key: String) async throws {
+    func save<T: Encodable & Sendable>(_ value: T, forKey key: String) async throws {
         let data = try JSONEncoder().encode(value)
         self.client.set(data, forKey: key)
     }
     
-    public func read<T: Decodable & Sendable>(_ type: T.Type, forKey key: String) async throws -> T? {
+    func read<T: Decodable & Sendable>(_ type: T.Type, forKey key: String) async throws -> T? {
         guard let data = self.client.data(forKey: key) else { return nil }
         return try JSONDecoder().decode(type, from: data)
     }
     
-    public func delete(forKey key: String) async throws {
+    func delete(forKey key: String) async throws {
         self.client.removeObject(forKey: key)
     }
     
-    public func update<T: Decodable & Encodable & Sendable>(_ type: T.Type, forKey key: String, update: @Sendable (T?) -> T?) async throws {
+    func update<T: Decodable & Encodable & Sendable>(_ type: T.Type, forKey key: String, update: @Sendable (T?) -> T?) async throws {
         let currentData = self.client.data(forKey: key)
         
         let current: T?

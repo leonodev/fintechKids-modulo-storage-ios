@@ -8,7 +8,7 @@
 import Security
 import Foundation
 
-public protocol KeychainProtocol: Sendable {
+public protocol FHKKeychainProtocol: Sendable {
     func save<T: Codable & Sendable>(_ value: T, for key: String) throws
     func read<T: Decodable & Sendable>(_ type: T.Type, for key: String) throws -> T?
     func delete(_ key: String) throws

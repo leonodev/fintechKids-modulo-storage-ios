@@ -8,13 +8,11 @@
 import Security
 import Foundation
 
-final public class KeychainStorage: KeychainProtocol {
-    static let shared = KeychainStorage()
-    
+final class KeychainStorage: FHKKeychainProtocol {
     private let service = Bundle.main.bundleIdentifier ?? "com.fleon.fintechids"
     private let lock = NSLock()
     
-    private init() {}
+    public init() {}
     
     public func save<T: Codable & Sendable>(_ value: T, for key: String) throws {
         lock.lock()

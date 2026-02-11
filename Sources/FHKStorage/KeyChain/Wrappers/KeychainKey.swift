@@ -19,19 +19,21 @@ public enum KeychainKey: String, CaseIterable, Sendable {
 @propertyWrapper
 struct KeychainStored<T: Codable & Sendable>: Sendable {
     private let key: String
+    private let storage: FHKKeychainProtocol
     
-    init(_ key: KeychainKey) {
+    init(_ key: KeychainKey, storage: FHKKeychainProtocol) {
         self.key = key.rawValue
+        self.storage = storage
     }
     
     var wrappedValue: T? {
-        get { try? KeychainStorage.shared.read(T.self, for: key) }
+        get { try? storage.read(T.self, for: key) }
         set {
             do {
                 if let value = newValue {
-                    try KeychainStorage.shared.save(value, for: key)
+                    try storage.save(value, for: key)
                 } else {
-                    try KeychainStorage.shared.delete(key)
+                    try storage.delete(key)
                 }
             } catch {
                 print("🔐 Keychain error: \(error)")
@@ -43,13 +45,15 @@ struct KeychainStored<T: Codable & Sendable>: Sendable {
 @propertyWrapper
 struct KeychainString: Sendable {
     private let key: String
+    private let storage: FHKKeychainProtocol
     
-    init(_ key: KeychainKey) {
+    init(_ key: KeychainKey, storage: FHKKeychainProtocol) {
         self.key = key.rawValue
+        self.storage = storage
     }
     
     var wrappedValue: String {
-        get { (try? KeychainStorage.shared.read(String.self, for: key)) ?? "" }
-        set { try? KeychainStorage.shared.save(newValue, for: key) }
+        get { (try? storage.read(String.self, for: key)) ?? "" }
+        set { try? storage.save(newValue, for: key) }
     }
 }

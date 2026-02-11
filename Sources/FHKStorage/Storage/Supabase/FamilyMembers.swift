@@ -8,7 +8,7 @@
 import Foundation
 import Supabase
 
-public class SupabaseFamilyMembers: StorageProtocol {
+public class SupabaseFamilyMembers: SupabasMembersProtocol {
     let supabaseClient: SupabaseClient
     
     let FAMILY_MEMBER_TABLE: String = "fhk_family_members"

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol StorageProtocol {
+public protocol SupabasMembersProtocol {
     func addMember(name: String, email: String) async throws
     func fetchFamilyMembers() async throws -> [FamilyMember]
     func deleteMember(identification: UUID) async throws
