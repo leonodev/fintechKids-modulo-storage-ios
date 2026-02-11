@@ -7,10 +7,7 @@
 
 import Foundation
 
-public protocol FHKStorageManagerProtocol {
-    var userDefault: FHKUserDefaultsProtocol { get }
-    var keychain: FHKKeychainProtocol { get }
-    
+public protocol FHKStorageManagerProtocol: Sendable {
     func saveUserDefaults<T: Encodable & Sendable>(_ value: T, forKey key: String) async throws
     func readUserDefaults<T: Decodable & Sendable>(_ type: T.Type, forKey key: String) async throws -> T?
     func updateUserDefaults<T>(_ type: T.Type,
@@ -20,9 +17,9 @@ public protocol FHKStorageManagerProtocol {
 }
 
 // UserDefault Methods
-public class FHKStorageManager: FHKStorageManagerProtocol  {
-    public var userDefault: FHKUserDefaultsProtocol
-    public var keychain: FHKKeychainProtocol
+public final class FHKStorageManager: FHKStorageManagerProtocol  {
+    public let userDefault: FHKUserDefaultsProtocol
+    public let keychain: FHKKeychainProtocol
     
     public init(userDefault: FHKUserDefaultsProtocol,
                 keychain: FHKKeychainProtocol) {
