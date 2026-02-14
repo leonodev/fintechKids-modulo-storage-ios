@@ -14,37 +14,33 @@ final public class FHKKeychainStorage: FHKKeychainProtocol {
     
     public init() {}
     
-    public func save<T: Codable & Sendable>(_ value: T, for key: String) throws {
+    // MARK: - Public Interface (Thread Safe)
+    
+    public func save<T: Codable & Sendable>(_ value: T, for key: String, requireBiometry: Bool = false) throws {
         lock.lock()
         defer { lock.unlock() }
         
         let data = try JSONEncoder().encode(value)
-        try save(data: data, for: key)
+        try performSave(data: data, for: key, requireBiometry: requireBiometry)
     }
     
-    public func read<T: Decodable & Sendable>(_ type: T.Type, for key: String) throws -> T? {
+    public func read<T: Decodable & Sendable>(_ type: T.Type, for key: String, prompt: String? = nil) throws -> T? {
         lock.lock()
         defer { lock.unlock() }
         
-        guard let data = try readData(for: key) else { return nil }
+        guard let data = try performReadData(for: key, prompt: prompt) else { return nil }
         return try JSONDecoder().decode(type, from: data)
     }
     
     public func delete(_ key: String) throws {
         lock.lock()
         defer { lock.unlock() }
-        
-        let query = baseQuery(for: key)
-        let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw KCError.from(status: status)
-        }
+        try performDelete(key)
     }
     
     public func contains(_ key: String) -> Bool {
         lock.lock()
         defer { lock.unlock() }
-        
         let query = baseQuery(for: key)
         return SecItemCopyMatching(query as CFDictionary, nil) == errSecSuccess
     }
@@ -52,44 +48,61 @@ final public class FHKKeychainStorage: FHKKeychainProtocol {
     public func clearAll() throws {
         lock.lock()
         defer { lock.unlock() }
-        
         for key in KeychainKey.allCases {
-            try? delete(key.rawValue)
+            try? performDelete(key.rawValue)
         }
     }
     
+    /// Corregido: Ya no causa Deadlock ni error de tipos
     public func atomicUpdate<T: Codable & Sendable>(_ key: String, update: (T?) -> T?) throws {
         lock.lock()
         defer { lock.unlock() }
         
-        let current: T? = try read(T.self, for: key)
+        // 1. Leemos usando el motor interno (sin lock adicional)
+        let currentData = try performReadData(for: key)
+        let current: T? = if let data = currentData { try? JSONDecoder().decode(T.self, from: data) } else { nil }
+        
+        // 2. Ejecutamos la lógica de actualización
         if let updated = update(current) {
-            try save(updated, for: key)
+            let data = try JSONEncoder().encode(updated)
+            // 3. Guardamos usando el motor interno (sin biometría por defecto en updates atómicos)
+            try performSave(data: data, for: key, requireBiometry: false)
         } else {
-            try delete(key)
+            try performDelete(key)
         }
     }
 }
 
-// MARK: - Extension methods
+// MARK: - Private Engine (The "Perform" methods do NOT use locks)
 private extension FHKKeychainStorage {
-    func save(data: Data, for key: String) throws {
+    
+    func performSave(data: Data, for key: String, requireBiometry: Bool) throws {
         var query = baseQuery(for: key)
+        
+        if requireBiometry {
+            if let accessControl = createAccessControl() {
+                query.removeValue(forKey: kSecAttrAccessible as String)
+                query[kSecAttrAccessControl as String] = accessControl
+            }
+        }
+        
         query[kSecValueData as String] = data
         
-        // Delete existing before save
+        // Limpiamos siempre antes de añadir
         SecItemDelete(query as CFDictionary)
         
         let status = SecItemAdd(query as CFDictionary, nil)
-        guard status == errSecSuccess else {
-            throw KCError.from(status: status)
-        }
+        guard status == errSecSuccess else { throw KCError.from(status: status) }
     }
     
-    func readData(for key: String) throws -> Data? {
+    func performReadData(for key: String, prompt: String? = nil) throws -> Data? {
         var query = baseQuery(for: key)
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
+        
+        if let prompt = prompt {
+            query[kSecUseOperationPrompt as String] = prompt
+        }
         
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
@@ -97,7 +110,16 @@ private extension FHKKeychainStorage {
         switch status {
         case errSecSuccess: return item as? Data
         case errSecItemNotFound: return nil
+        case errSecUserCanceled: return nil // Usuario canceló FaceID
         default: throw KCError.from(status: status)
+        }
+    }
+    
+    func performDelete(_ key: String) throws {
+        let query = baseQuery(for: key)
+        let status = SecItemDelete(query as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            throw KCError.from(status: status)
         }
     }
     
@@ -109,22 +131,14 @@ private extension FHKKeychainStorage {
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         ]
     }
+    
+    func createAccessControl() -> SecAccessControl? {
+        var error: Unmanaged<CFError>?
+        return SecAccessControlCreateWithFlags(
+            nil,
+            kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+            .biometryAny,
+            &error
+        )
+    }
 }
-
-/*
- 
- EJEMPLO DE USO
- 
- public func saveLanguage(_ language: String) async {
-     let languageType = Configuration.languageTypeFromCode(language)
-     await AppSecurity.shared.setLanguage(languageType)
- }
- 
- public func readLanguage() async {
-     guard let currentLanguage = await AppSecurity.shared.language else {
-         return
-     }
-     
- }
- 
- */
