@@ -14,6 +14,18 @@ public protocol FHKStorageManagerProtocol: Sendable {
                    forKey key: String,
                    update: @Sendable (T?) -> T?) async throws where T: Decodable, T: Encodable, T: Sendable
     func deleteUserDefaults(forKey key: String) async throws
+    
+    func saveKeychain<T: Codable & Sendable>(_ value: T,
+                                             for key: String) throws
+    
+    func readKeychain<T: Decodable & Sendable>(_ type: T.Type,
+                                               for key: String) throws -> T?
+    
+    func deleteKeychain(_ key: String) throws
+    
+    func containsKeychain(_ key: String) -> Bool
+    
+    func clearAllKeychain() throws
 }
 
 // UserDefault Methods
@@ -51,26 +63,28 @@ public final class FHKStorageManager: FHKStorageManagerProtocol  {
 }
 
 // Keychain Methods
-extension FHKStorageManager {
+public extension FHKStorageManager {
     
-    func saveKeychain<T: Codable & Sendable>(_ value: T, for key: String) throws {
+    public func saveKeychain<T: Codable & Sendable>(_ value: T,
+                                                    for key: String) throws {
         try keychain.save(value, for: key)
     }
     
     
-    func readKeychain<T: Decodable & Sendable>(_ type: T.Type, for key: String) throws -> T? {
+    public func readKeychain<T: Decodable & Sendable>(_ type: T.Type,
+                                                      for key: String) throws -> T? {
         try keychain.read(type, for: key)
     }
     
-    func deleteKeychain(_ key: String) throws {
+    public func deleteKeychain(_ key: String) throws {
         try keychain.delete(key)
     }
     
-    func containsKeychain(_ key: String) -> Bool {
+    public func containsKeychain(_ key: String) -> Bool {
         try keychain.contains(key)
     }
     
-    func clearAllKeychain() throws {
+    public func clearAllKeychain() throws {
         try keychain.clearAll()
     }
 }
