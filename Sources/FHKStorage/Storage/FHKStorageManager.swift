@@ -33,6 +33,13 @@ public protocol FHKStorageManagerProtocol: Sendable {
     func isBiometryAvailable() -> Bool
 }
 
+// Setting default require biometry
+public extension FHKStorageManagerProtocol {
+    func saveKeychain<T: Codable & Sendable>(_ value: T, for key: String) throws {
+        try saveKeychain(value, for: key, requireBiometry: false)
+    }
+}
+
 // UserDefault Methods
 public final class FHKStorageManager: FHKStorageManagerProtocol  {
     public let userDefault: FHKUserDefaultsProtocol
