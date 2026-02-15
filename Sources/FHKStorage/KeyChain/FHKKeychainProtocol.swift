@@ -19,3 +19,7 @@ public protocol FHKKeychainProtocol: Sendable {
     func contains(_ key: String) -> Bool
     func clearAll() throws
 }
+
+public struct KeychainKeys {
+    private init() {}
+}
