@@ -15,22 +15,17 @@ public protocol FHKStorageManagerProtocol: Sendable {
                    forKey key: String,
                    update: @Sendable (T?) -> T?) async throws where T: Decodable, T: Encodable, T: Sendable
     func deleteUserDefaults(forKey key: String) async throws
-    
     func saveKeychain<T: Codable & Sendable>(_ value: T,
                                              for key: String,
                                              requireBiometry: Bool) throws
-    
     func readKeychain<T: Decodable & Sendable>(_ type: T.Type,
                                                for key: String,
                                                prompt: String?) throws -> T?
-    
     func deleteKeychain(_ key: String) throws
-    
     func containsKeychain(_ key: String) -> Bool
-    
     func clearAllKeychain() throws
-    
     func isBiometryAvailable() -> Bool
+    func exists(key: String) -> Bool
 }
 
 // Setting default require biometry
@@ -111,5 +106,16 @@ public extension FHKStorageManager {
         let canEvaluate = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
         
         return canEvaluate
+    }
+    
+    public func exists(key: String) -> Bool {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecReturnAttributes as String: true
+        ]
+        
+        let status = SecItemCopyMatching(query as CFDictionary, nil)
+        return status == errSecSuccess
     }
 }
