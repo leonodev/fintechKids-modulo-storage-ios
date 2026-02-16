@@ -41,8 +41,19 @@ final public class FHKKeychainStorage: FHKKeychainProtocol {
     public func contains(_ key: String) -> Bool {
         lock.lock()
         defer { lock.unlock() }
-        let query = baseQuery(for: key)
-        return SecItemCopyMatching(query as CFDictionary, nil) == errSecSuccess
+        
+        var query = baseQuery(for: key)
+        
+        // 1. Forzamos a que no se muestre la interfaz de usuario (FaceID)
+        query[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
+        
+        // 2. Ejecutamos la consulta
+        let status = SecItemCopyMatching(query as CFDictionary, nil)
+        
+        // 3. Interpretamos el resultado:
+        // - errSecSuccess: Existe y está desbloqueado.
+        // - errSecInteractionNotAllowed: Existe pero está bloqueado (requiere FaceID).
+        return status == errSecSuccess || status == errSecInteractionNotAllowed
     }
     
     public func clearAll() throws {

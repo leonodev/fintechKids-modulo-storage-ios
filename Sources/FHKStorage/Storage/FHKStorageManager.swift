@@ -112,10 +112,14 @@ public extension FHKStorageManager {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-            kSecReturnAttributes as String: true
+            kSecUseAuthenticationUI as String: kSecUseAuthenticationUIFail, 
+            kSecReturnAttributes as String: false // No necesitamos atributos, solo el status
         ]
         
         let status = SecItemCopyMatching(query as CFDictionary, nil)
-        return status == errSecSuccess
+        
+        // errSecSuccess significa que existe y se pudo acceder
+        // errSecInteractionNotAllowed significa que EXISTE pero requiere biometría (así que existe)
+        return status == errSecSuccess || status == errSecInteractionNotAllowed
     }
 }
