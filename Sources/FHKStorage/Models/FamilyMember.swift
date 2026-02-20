@@ -8,9 +8,14 @@
 import Foundation
 
 public struct FamilyMember: Codable, Identifiable {
-    public var id: Int? // Supabase suele generar un ID automático
+    // Identificador de Supabase (Opcional para nuevos registros)
+    public var id: Int?
     let email: String
     let memberName: String
+    
+    // Propiedades de conveniencia para la UI (No se guardan en la DB)
+    public var avatarImage: String = "boy_9"
+    public var iconName: String = "trash"
     
     public init(id: Int? = nil, email: String, memberName: String) {
         self.id = id
