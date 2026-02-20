@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct FamilyMember: Codable, Identifiable, Hashable {
+public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
     // Identificador de Supabase (Opcional para nuevos registros)
     public var id: Int?
     let email: String
