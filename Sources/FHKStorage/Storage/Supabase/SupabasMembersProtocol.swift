@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol SupabasMembersProtocol {
-    func addMember(name: String, email: String) async throws
+    func addMembers(members: [FamilyMember]) async throws
     func fetchFamilyMembers() async throws -> [FamilyMember]
     func deleteMember(identification: UUID) async throws
 }

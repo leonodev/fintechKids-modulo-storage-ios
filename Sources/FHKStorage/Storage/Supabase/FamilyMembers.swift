@@ -7,31 +7,28 @@
 
 import Foundation
 import Supabase
+import FHKUtils
 
 public class SupabaseFamilyMembers: SupabasMembersProtocol {
     let supabaseClient: SupabaseClient
-    
     let FAMILY_MEMBER_TABLE: String = "fhk_family_members"
     
     public init(supabaseClient: SupabaseClient) {
         self.supabaseClient = supabaseClient
     }
     
-    public func addMember(name: String, email: String) async throws {
-        let newMember = FamilyMember(email: email, memberName: name)
+    public func addMembers(members: [FamilyMember]) async throws {
         
         do {
             let response = try await supabaseClient.from(FAMILY_MEMBER_TABLE)
-                .insert(newMember)
+                .insert(members)
                 .execute()
             
-            print("✅ Status Code: \(response.status)")
-            // Si llegas aquí, el servidor recibió algo.
+            Logger.info("Status Code: \(response.status)")
         } catch {
-            // Aquí verás errores de red o de decodificación
-            print("❌ Error de Supabase: \(error.localizedDescription)")
+            Logger.error("Error de Supabase: \(error.localizedDescription)")
             if let decodingError = error as? DecodingError {
-                print("Error de decodificación: \(decodingError)")
+                Logger.error("Error de decodificación: \(decodingError)")
             }
         }
     }
