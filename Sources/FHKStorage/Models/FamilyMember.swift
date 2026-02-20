@@ -10,8 +10,8 @@ import Foundation
 public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
     // Identificador de Supabase (Opcional para nuevos registros)
     public var id: Int?
-    let email: String
-    let memberName: String
+    public let email: String
+    public let memberName: String
     
     // Propiedades de conveniencia para la UI (No se guardan en la DB)
     public var avatarImage: String = "boy_9"
