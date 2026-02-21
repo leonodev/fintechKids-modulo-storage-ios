@@ -23,3 +23,7 @@ public protocol FHKKeychainProtocol: Sendable {
 public struct KeychainKeys {
     private init() {}
 }
+
+public extension KeychainKeys {
+    static let userKey = "user_key"
+}
