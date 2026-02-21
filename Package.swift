@@ -19,8 +19,11 @@ let package = Package(
         .package(url: "https://github.com/leonodev/fintechKids-modulo-utils-ios.git",
             .upToNextMajor(from: "1.0.2")),
         
-            .package(url: "https://github.com/supabase/supabase-swift.git",
-                    .upToNextMajor(from: "2.5.1")),
+        .package(url: "https://github.com/leonodev/fintechKids-modulo-designsystem-ios.git",
+                 branch: "main"),
+        
+        .package(url: "https://github.com/supabase/supabase-swift.git",
+            .upToNextMajor(from: "2.5.1")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -30,7 +33,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Supabase", package: "supabase-swift"),
                 // Modules
-                .product(name: "FHKUtils", package: "fintechKids-modulo-utils-ios")
+                .product(name: "FHKUtils", package: "fintechKids-modulo-utils-ios"),
+                .product(name: "FHKDesignSystem", package: "fintechKids-modulo-designsystem-ios")
             ]
         ),
         .testTarget(

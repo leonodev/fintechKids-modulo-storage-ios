@@ -6,27 +6,35 @@
 //
 
 import Foundation
+import FHKDesignSystem
 
 public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
     // Identificador de Supabase (Opcional para nuevos registros)
     public var id: Int?
-    public let email: String
-    public let memberName: String
+    
+    // Propiedades que unicamente seran persisitdas
+    public let email_parent: String
+    public let member_name: String
     
     // Propiedades de conveniencia para la UI (No se guardan en la DB)
-    public var avatarImage: String = "boy_9"
-    public var iconName: String = "trash"
+    public var avatarImage: String?
+    public var iconName: String = ImageSystem.trash.name
     
-    public init(id: Int? = nil, email: String, memberName: String) {
+    public init(id: Int? = nil,
+                email: String,
+                memberName: String,
+                avatarImage: String? = AvatarType.boy_9.name
+    ) {
         self.id = id
-        self.email = email
-        self.memberName = memberName
+        self.email_parent = email
+        self.member_name = memberName
+        self.avatarImage = avatarImage
     }
-
-    // Mapeamos los nombres de Swift (camelCase) a los de SQL (snake_case)
+    
+    // ignoreamos avatarImage e iconName al guardar en DB
     enum CodingKeys: String, CodingKey {
         case id
-        case email = "email_parent"
-        case memberName = "member_name"
+        case email_parent
+        case member_name
     }
 }
