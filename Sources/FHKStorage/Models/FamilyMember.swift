@@ -9,8 +9,8 @@ import Foundation
 import FHKDesignSystem
 
 public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
-    // Identificador de Supabase (Opcional para nuevos registros)
-    public var id: Int?
+    public let id = UUID() // Identidad para ForEach de SwiftUI
+    public var dbId: Int? // Identidad para Supabase
     
     // Propiedades que unicamente seran persisitdas
     public let email_parent: String
@@ -25,7 +25,7 @@ public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
                 memberName: String,
                 avatarImage: String? = AvatarType.boy_9.name
     ) {
-        self.id = id
+        self.dbId = id
         self.email_parent = email
         self.member_name = memberName
         self.avatarImage = avatarImage
@@ -33,7 +33,7 @@ public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
     
     // ignoreamos avatarImage e iconName al guardar en DB
     enum CodingKeys: String, CodingKey {
-        case id
+        case dbId = "id"
         case email_parent
         case member_name
     }
