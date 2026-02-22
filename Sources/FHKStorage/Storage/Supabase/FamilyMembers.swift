@@ -9,7 +9,7 @@ import Foundation
 import Supabase
 import FHKUtils
 
-public final class SupabaseFamilyMembers: SupabasMembersProtocol {
+public final class FHKSupabaseMembers: FHKSupabaseMembersProtocol {
     let supabaseClient: SupabaseClient
     
     public init(supabaseClient: SupabaseClient) {

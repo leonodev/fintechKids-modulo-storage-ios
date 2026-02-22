@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol SupabasMembersProtocol: AnyObject, Sendable {
+public protocol FHKSupabaseMembersProtocol: AnyObject, Sendable {
     func addMembers(members: [FamilyMember]) async throws
     func fetchFamilyMembers() async throws -> [FamilyMember]
     func deleteMember(identification: UUID) async throws
