@@ -32,9 +32,11 @@ public final class FHKSupabaseMembers: FHKSupabaseMembersProtocol {
         }
     }
     
-    public func fetchFamilyMembers() async throws -> [FamilyMember] {
-        let members: [FamilyMember] = try await supabaseClient.from(DB.SUPABASE.TABLE_FAMILY_MEMBER.NAME)
-            .select() // Trae todas las columnas
+    public func fetchFamilyMembers(parentEmail: String) async throws -> [FamilyMember] {
+        let members: [FamilyMember] = try await supabaseClient
+            .from(DB.SUPABASE.TABLE_FAMILY_MEMBER.NAME)
+            .select()
+            .eq(DB.SUPABASE.TABLE_FAMILY_MEMBER.COLUMN.email, value: parentEmail)
             .execute()
             .value
         
