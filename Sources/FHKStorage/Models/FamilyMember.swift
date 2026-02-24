@@ -32,7 +32,7 @@ public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
     
     // ignoreamos iconName al guardar en DB
     enum CodingKeys: String, CodingKey {
-        case dbId = "identification_uuid"
+        case dbId = "id"
         case email_parent
         case member_name
         case avatar_name
