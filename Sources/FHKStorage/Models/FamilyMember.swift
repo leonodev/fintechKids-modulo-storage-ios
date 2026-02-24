@@ -15,26 +15,26 @@ public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
     // Propiedades que unicamente seran persisitdas
     public let email_parent: String
     public let member_name: String
-    
+    public let avatar_name: String
     // Propiedades de conveniencia para la UI (No se guardan en la DB)
-    public var avatarImage: String?
     public var iconName: String = ImageSystem.trash.name
     
     public init(id: Int? = nil,
                 email: String,
                 memberName: String,
-                avatarImage: String? = AvatarType.boy_9.name
+                avatarImage: String = AvatarType.boy_9.name
     ) {
         self.dbId = id
         self.email_parent = email
         self.member_name = memberName
-        self.avatarImage = avatarImage
+        self.avatar_name = avatarImage
     }
     
-    // ignoreamos avatarImage e iconName al guardar en DB
+    // ignoreamos iconName al guardar en DB
     enum CodingKeys: String, CodingKey {
-        case dbId = "id"
+        case dbId = "identification_uuid"
         case email_parent
         case member_name
+        case avatar_name
     }
 }
