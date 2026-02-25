@@ -17,6 +17,7 @@ public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
     public let member_name: String
     public let avatar_name: String
     // Propiedades de conveniencia para la UI (No se guardan en la DB)
+    public let identification_uuid: String? = nil
     public var iconName: String = ImageSystem.trash.name
     
     public init(id: Int? = nil,
@@ -36,5 +37,6 @@ public struct FamilyMember: Codable, Identifiable, Hashable, Equatable {
         case email_parent
         case member_name
         case avatar_name
+        case identification_uuid
     }
 }
