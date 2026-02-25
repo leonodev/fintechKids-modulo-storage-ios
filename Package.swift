@@ -22,9 +22,6 @@ let package = Package(
         .package(url: "https://github.com/leonodev/fintechKids-modulo-domain-ios.git",
             branch: "main"),
         
-        .package(url: "https://github.com/leonodev/fintechKids-modulo-designsystem-ios.git",
-                 branch: "main"),
-        
         .package(url: "https://github.com/supabase/supabase-swift.git",
             .upToNextMajor(from: "2.5.1")),
     ],
@@ -37,8 +34,7 @@ let package = Package(
                 .product(name: "Supabase", package: "supabase-swift"),
                 // Modules FHK
                 .product(name: "FHKDomain", package: "fintechKids-modulo-domain-ios"),
-                .product(name: "FHKUtils", package: "fintechKids-modulo-utils-ios"),
-                .product(name: "FHKDesignSystem", package: "fintechKids-modulo-designsystem-ios")
+                .product(name: "FHKUtils", package: "fintechKids-modulo-utils-ios")
             ]
         ),
         .testTarget(

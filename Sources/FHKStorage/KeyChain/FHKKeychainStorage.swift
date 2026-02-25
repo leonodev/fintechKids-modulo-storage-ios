@@ -7,6 +7,7 @@
 
 import Security
 import Foundation
+import FHKDomain
 
 final public class FHKKeychainStorage: FHKKeychainProtocol {
     private let service = Bundle.main.bundleIdentifier ?? "com.fleon.fintechids"

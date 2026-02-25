@@ -8,6 +8,7 @@
 import Foundation
 import Supabase
 import FHKUtils
+import FHKDomain
 
 public final class FHKSupabaseMembers: FHKSupabaseMembersProtocol {
     let supabaseClient: SupabaseClient

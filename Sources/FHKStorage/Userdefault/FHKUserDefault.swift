@@ -2,6 +2,7 @@
 // https://docs.swift.org/swift-book
 
 import Foundation
+import FHKDomain
 
 public actor FHKUserDefault: FHKUserDefaultsProtocol {
     private let client: UserDefaults
