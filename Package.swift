@@ -20,10 +20,7 @@ let package = Package(
             .upToNextMajor(from: "1.0.2")),
         
         .package(url: "https://github.com/leonodev/fintechKids-modulo-domain-ios.git",
-            branch: "main"),
-        
-        .package(url: "https://github.com/supabase/supabase-swift.git",
-            .upToNextMajor(from: "2.5.1")),
+            branch: "main")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -31,7 +28,6 @@ let package = Package(
         .target(
             name: "FHKStorage",
             dependencies: [
-                .product(name: "Supabase", package: "supabase-swift"),
                 // Modules FHK
                 .product(name: "FHKDomain", package: "fintechKids-modulo-domain-ios"),
                 .product(name: "FHKUtils", package: "fintechKids-modulo-utils-ios")
