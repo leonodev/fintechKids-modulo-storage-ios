@@ -9,15 +9,6 @@ import Foundation
 import FHKUtils
 import FHKDomain
 
-public enum KeychainKey: String, CaseIterable, Sendable {
-    case authToken
-    case refreshToken
-    case userCredentials
-    case appSettings
-    case biometricData
-    case appLanguage
-}
-
 @propertyWrapper
 struct KeychainStored<T: Codable & Sendable>: Sendable {
     private let key: String
