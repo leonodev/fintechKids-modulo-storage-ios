@@ -87,7 +87,7 @@ public extension FHKStorageManager {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
             kSecUseAuthenticationUI as String: kSecUseAuthenticationUIFail, 
-            kSecReturnAttributes as String: false // No necesitamos atributos, solo el status
+            kSecMatchLimit as String: kSecMatchLimitOne
         ]
         
         let status = SecItemCopyMatching(query as CFDictionary, nil)
