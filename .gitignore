@@ -3,3 +3,4 @@ Demo/FHKStorageDemo/FHKStorageDemo.xcodeproj/project.xcworkspace/xcuserdata/fred
 Demo/FHKStorageDemo/FHKStorageDemo.xcodeproj/xcuserdata/fredyleon.xcuserdatad/xcschemes/xcschememanagement.plist
 Package.resolved
 *.xcuserstate
+.swiftpm/xcode/xcuserdata/fleon.xcuserdatad/xcschemes/xcschememanagement.plist

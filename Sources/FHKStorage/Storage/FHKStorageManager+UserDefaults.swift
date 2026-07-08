@@ -1,5 +1,5 @@
 //
-//  StorageManager.swift
+//  FHKStorageManager+UserDefaults.swift
 //  FHKStorage
 //
 //  Created by Fredy Leon on 11/2/26.
@@ -37,105 +37,9 @@ extension FHKStorageManager {
     }
 }
 
-// MARK: - Keychain & System API
-extension FHKStorageManager {
-    
-    public func saveKeychain<T: Codable & Sendable>(_ value: T, for key: String, requireBiometry: Bool = false) throws {
-        let data = try JSONEncoder().encode(value)
-        try saveKeychainData(data, key, requireBiometry)
-    }
-    
-    public func readKeychain<T: Decodable & Sendable>(_ type: T.Type, for key: String, prompt: String? = nil) throws -> T? {
-        guard let data = try readKeychainData(key, prompt) else { return nil }
-        return try JSONDecoder().decode(type, from: data)
-    }
-    
-    public func deleteKeychain(_ key: String) throws {
-        try deleteKeychainData(key)
-    }
-    
-    public func containsKeychain(_ key: String) -> Bool {
-        containsKeychainKey(key)
-    }
-    
-    public func clearAllKeychain() throws {
-        try clearAllKeychainData()
-    }
-    
-    public func isBiometryAvailable() -> Bool {
-        isBiometryAvailableAction()
-    }
-    
-    public func exists(key: String) -> Bool {
-        existsKeyAction(key)
-    }
-}
 
-extension FHKStorageManager {
-    public func clearKeychainIfNewInstallation() async {
-        let firstTimeRunAppKey = "first_time_run_app"
-        
-        do {
-            let hasRunBefore = try await readUserDefaults(Bool.self, forKey: firstTimeRunAppKey) ?? false
-            
-            if !hasRunBefore {
-                try clearAllKeychain()
-                try await saveUserDefaults(true, forKey: firstTimeRunAppKey)
-            }
-        } catch {
-            Logger.error("❌ Error proccessing Keychain Cleanup: \(error)")
-        }
-    }
-}
 
-extension FHKStorageManager {
-    
-    public static func live(userDefault: FHKUserDefaultsProtocol, keychain: FHKKeychainProtocol) -> Self {
-        var manager = Self()
-        
-        manager.saveUserDefaultsData = { value, key in try await userDefault.save(value, forKey: key) }
-        manager.readUserDefaultsData = { key in try await userDefault.read(Data.self, forKey: key) }
-        manager.deleteUserDefaultsData = { key in try await userDefault.delete(forKey: key) }
-        
-        manager.saveKeychainData = { data, key, biometry in try keychain.save(data, for: key, requireBiometry: biometry) }
-        manager.readKeychainData = { key, prompt in try keychain.read(Data.self, for: key, prompt: prompt) }
-        manager.deleteKeychainData = { key in try keychain.delete(key) }
-        manager.containsKeychainKey = { key in keychain.contains(key) }
-        manager.clearAllKeychainData = { try keychain.clearAll() }
-        
-        manager.isBiometryAvailableAction = {
-            let context = LAContext()
-            return context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
-        }
-        
-        manager.existsKeyAction = { key in
-            let context = LAContext()
-            context.interactionNotAllowed = true
-            let query: [String: Any] = [
-                kSecClass as String: kSecClassGenericPassword,
-                kSecAttrAccount as String: key,
-                kSecUseAuthenticationContext as String: context,
-                kSecMatchLimit as String: kSecMatchLimitOne
-            ]
-            let status = SecItemCopyMatching(query as CFDictionary, nil)
-            return status == errSecSuccess || status == errSecInteractionNotAllowed
-        }
-        
-        return manager
-    }
-}
 
-extension FHKStorageManager {
-    
-    public static var test: Self {
-        // Usamos contenedores thread-safe o copias locales en los closures
-        // Para simular persistencia en memoria durante un test simple:
-        return Self(
-            // Configura aquí comportamientos base si los necesitas,
-            // de lo contrario, el init por defecto ya los deja vacíos listos para pisar.
-        )
-    }
-}
 
 //// UserDefault Methods
 //public final class FHKStorageManager: FHKStorageManagerProtocol  {
