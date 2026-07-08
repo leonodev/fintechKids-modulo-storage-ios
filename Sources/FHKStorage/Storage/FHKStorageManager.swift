@@ -11,19 +11,19 @@ import FHKDomain
 import FHKUtils
 
 // MARK: - UserDefaults API
-public extension FHKStorageManager {
+extension FHKStorageManager {
     
-    func saveUserDefaults<T: Encodable & Sendable>(_ value: T, forKey key: String) async throws {
+    public func saveUserDefaults<T: Encodable & Sendable>(_ value: T, forKey key: String) async throws {
         let data = try JSONEncoder().encode(value)
         try await saveUserDefaultsData(data, key)
     }
     
-    func readUserDefaults<T: Decodable & Sendable>(_ type: T.Type, forKey key: String) async throws -> T? {
+    public func readUserDefaults<T: Decodable & Sendable>(_ type: T.Type, forKey key: String) async throws -> T? {
         guard let data = try await readUserDefaultsData(key) else { return nil }
         return try JSONDecoder().decode(type, from: data)
     }
     
-    func updateUserDefaults<T>(_ type: T.Type, forKey key: String, update: @Sendable (T?) -> T?) async throws where T: Decodable, T: Encodable, T: Sendable {
+    public func updateUserDefaults<T>(_ type: T.Type, forKey key: String, update: @Sendable (T?) -> T?) async throws where T: Decodable, T: Encodable, T: Sendable {
         let current = try await readUserDefaults(type, forKey: key)
         if let updated = update(current) {
             try await saveUserDefaults(updated, forKey: key)
@@ -32,47 +32,47 @@ public extension FHKStorageManager {
         }
     }
     
-    func deleteUserDefaults(forKey key: String) async throws {
+    public func deleteUserDefaults(forKey key: String) async throws {
         try await deleteUserDefaultsData(key)
     }
 }
 
 // MARK: - Keychain & System API
-public extension FHKStorageManager {
+extension FHKStorageManager {
     
-    func saveKeychain<T: Codable & Sendable>(_ value: T, for key: String, requireBiometry: Bool = false) throws {
+    public func saveKeychain<T: Codable & Sendable>(_ value: T, for key: String, requireBiometry: Bool = false) throws {
         let data = try JSONEncoder().encode(value)
         try saveKeychainData(data, key, requireBiometry)
     }
     
-    func readKeychain<T: Decodable & Sendable>(_ type: T.Type, for key: String, prompt: String? = nil) throws -> T? {
+    public func readKeychain<T: Decodable & Sendable>(_ type: T.Type, for key: String, prompt: String? = nil) throws -> T? {
         guard let data = try readKeychainData(key, prompt) else { return nil }
         return try JSONDecoder().decode(type, from: data)
     }
     
-    func deleteKeychain(_ key: String) throws {
+    public func deleteKeychain(_ key: String) throws {
         try deleteKeychainData(key)
     }
     
-    func containsKeychain(_ key: String) -> Bool {
+    public func containsKeychain(_ key: String) -> Bool {
         containsKeychainKey(key)
     }
     
-    func clearAllKeychain() throws {
+    public func clearAllKeychain() throws {
         try clearAllKeychainData()
     }
     
-    func isBiometryAvailable() -> Bool {
+    public func isBiometryAvailable() -> Bool {
         isBiometryAvailableAction()
     }
     
-    func exists(key: String) -> Bool {
+    public func exists(key: String) -> Bool {
         existsKeyAction(key)
     }
 }
 
-public extension FHKStorageManager {
-    func clearKeychainIfNewInstallation() async {
+extension FHKStorageManager {
+    public func clearKeychainIfNewInstallation() async {
         let firstTimeRunAppKey = "first_time_run_app"
         
         do {
@@ -88,9 +88,9 @@ public extension FHKStorageManager {
     }
 }
 
-public extension FHKStorageManager {
+extension FHKStorageManager {
     
-    static func live(userDefault: FHKUserDefaultsProtocol, keychain: FHKKeychainProtocol) -> Self {
+    public static func live(userDefault: FHKUserDefaultsProtocol, keychain: FHKKeychainProtocol) -> Self {
         var manager = Self()
         
         manager.saveUserDefaultsData = { value, key in try await userDefault.save(value, forKey: key) }
@@ -125,9 +125,9 @@ public extension FHKStorageManager {
     }
 }
 
-public extension FHKStorageManager {
+extension FHKStorageManager {
     
-    static var test: Self {
+    public static var test: Self {
         // Usamos contenedores thread-safe o copias locales en los closures
         // Para simular persistencia en memoria durante un test simple:
         return Self(
